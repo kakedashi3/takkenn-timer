@@ -54,19 +54,34 @@
     display:flex;flex-direction:column;justify-content:center;
     gap:clamp(2px,1vh,10px);
   }
-  .qlabel{font-size:clamp(11px,1.7vh,15px);color:var(--muted);font-weight:700;letter-spacing:.12em;}
-  .qnum{
-    font-variant-numeric:tabular-nums;line-height:.92;
-    font-weight:900;letter-spacing:-.02em;
-  }
-  .qnum b{font-size:clamp(52px,15vmin,128px);color:var(--accent);}
-  .qnum span{font-size:clamp(22px,5vmin,40px);color:var(--muted);font-weight:800;}
-  .qsub{font-size:clamp(11px,1.7vh,14px);color:var(--muted);font-weight:600;}
-  .qpick{align-self:center;margin-top:clamp(3px,.8vh,8px);background:var(--panel2);
-    border:1px solid var(--line);color:var(--accent);font-family:inherit;font-weight:800;
-    font-size:clamp(11px,1.7vh,14px);border-radius:99px;padding:6px 18px;cursor:pointer;}
+  /* 上段: 第N問・残り問・開始問題 を横並び */
+  .qline{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2.2vw,16px);
+    flex-wrap:wrap;font-weight:800;}
+  .qline .qn{font-size:clamp(16px,2.6vh,22px);color:var(--ink);font-variant-numeric:tabular-nums;}
+  .qline .qn b{font-size:1.5em;color:var(--accent);}
+  .qline .qn i{font-style:normal;color:var(--muted);font-weight:800;}
+  .qline .qsubinline{font-size:clamp(11px,1.7vh,14px);color:var(--muted);font-weight:700;}
+  .qpick{background:var(--panel2);border:1px solid var(--line);color:var(--accent);
+    font-family:inherit;font-weight:800;font-size:clamp(11px,1.7vh,13px);
+    border-radius:99px;padding:5px 14px;cursor:pointer;}
   .qpick:active{filter:brightness(.97);}
   .qpick.hidden{display:none;}
+
+  /* アナログ時計 */
+  .clockwrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(2px,.8vh,8px);}
+  #clock{width:clamp(130px,40vmin,215px);height:auto;max-width:100%;aspect-ratio:1/1;display:block;}
+  .cface{fill:var(--bg2);stroke:var(--line);stroke-width:2;}
+  .hand{stroke-linecap:round;}
+  .hour{stroke:var(--ink);stroke-width:5.5;}
+  .min{stroke:var(--ink);stroke-width:3.6;}
+  .sec{stroke:var(--bad);stroke-width:1.7;}
+  .sect{stroke:var(--bad);stroke-width:1.7;}  /* 秒針の尾 */
+  .cap{fill:var(--bad);}
+  .tick{stroke:var(--muted);stroke-width:1;}
+  .tickmaj{stroke:var(--ink);stroke-width:2.6;}
+  .cnum{fill:var(--ink);font-weight:800;font-size:15px;text-anchor:middle;dominant-baseline:central;font-family:inherit;}
+  .clockdigital{font-variant-numeric:tabular-nums;font-weight:800;color:var(--muted);
+    font-size:clamp(13px,2vh,17px);letter-spacing:.04em;}
 
   .qstep{display:flex;align-items:center;gap:12px;justify-content:center;}
   .qstep button{width:54px;height:54px;border-radius:14px;border:1px solid var(--line);
@@ -76,33 +91,26 @@
     border-radius:12px;background:var(--bg2);color:var(--ink);padding:8px;font-family:inherit;}
   .note2{text-align:center;color:var(--muted);font-weight:600;font-size:13px;}
 
-  .perq{margin-top:clamp(4px,1.2vh,14px);}
-  .perq .ttl{font-size:clamp(11px,1.7vh,14px);color:var(--muted);font-weight:700;letter-spacing:.06em;}
-  .perq .val{
-    font-variant-numeric:tabular-nums;font-weight:900;line-height:1;
-    font-size:clamp(40px,12vmin,92px);margin-top:2px;letter-spacing:-.01em;transition:color .25s;
-  }
+  /* 横並びの読み取り行（この問題の残り / 全体の残り / ペース） */
+  .readouts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(7px,1.6vw,12px);flex:0 0 auto;}
+  .ro{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:clamp(6px,1.2vh,12px) clamp(4px,1vw,10px);text-align:center;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;justify-content:center;}
+  .ro .k{font-size:clamp(9px,1.4vh,12px);color:var(--muted);font-weight:700;letter-spacing:.03em;}
+  .ro .val{font-variant-numeric:tabular-nums;font-weight:900;line-height:1.05;
+    font-size:clamp(20px,4.6vh,34px);margin-top:2px;transition:color .25s;}
+  .ro .note{font-size:clamp(9px,1.3vh,11px);color:var(--muted);font-weight:600;margin-top:1px;}
   .perq.is-good .val{color:var(--good);}
   .perq.is-warn .val{color:var(--warn);}
   .perq.is-bad .val{color:var(--bad);animation:pulse 1s infinite;}
   @keyframes pulse{50%{opacity:.4;}}
-  .qbar{height:12px;border-radius:99px;background:var(--panel2);overflow:hidden;margin-top:clamp(6px,1.2vh,12px);border:1px solid var(--line);}
+  .pace .val.ahead{color:var(--good);}
+  .pace .val.behind{color:var(--bad);}
+  .pace .val.onpace{color:var(--ink);}
+
+  .qbar{height:9px;border-radius:99px;background:var(--panel2);overflow:hidden;border:1px solid var(--line);flex:0 0 auto;}
   .qbar i{display:block;height:100%;border-radius:99px;background:var(--good);transition:width .3s linear,background .3s;}
-
-  /* stats */
-  .stats{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.6vw,14px);flex:0 0 auto;}
-  .stat{
-    background:var(--panel);border:1px solid var(--line);border-radius:16px;
-    padding:clamp(7px,1.4vh,15px);text-align:center;box-shadow:var(--shadow);
-  }
-  .stat .k{font-size:clamp(10px,1.5vh,13px);color:var(--muted);font-weight:700;letter-spacing:.05em;}
-  .stat .v{font-variant-numeric:tabular-nums;font-weight:900;font-size:clamp(24px,5.6vh,42px);line-height:1.05;margin-top:2px;}
-  .pace .v.ahead{color:var(--good);}
-  .pace .v.behind{color:var(--bad);}
-  .pace .v.onpace{color:var(--ink);}
-  .pace .note{font-size:clamp(10px,1.4vh,12px);color:var(--muted);font-weight:600;margin-top:1px;}
-
-  .totalbar{height:10px;border-radius:99px;background:var(--panel2);overflow:hidden;border:1px solid var(--line);flex:0 0 auto;}
+  .totalbar{height:9px;border-radius:99px;background:var(--panel2);overflow:hidden;border:1px solid var(--line);flex:0 0 auto;}
   .totalbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#6aa9f0);transition:width .4s linear;}
 
   /* controls */
@@ -152,30 +160,45 @@
   </header>
 
   <div class="card">
-    <div class="qlabel">現在の問題</div>
-    <div class="qnum"><b id="qnum">1</b><span>/ <span id="qtotal">50</span></span></div>
-    <div class="qsub" id="qsub">残り 50 問</div>
-    <button class="qpick" id="qpick">開始する問題を選ぶ ▼</button>
+    <div class="qline">
+      <span class="qn">第 <b id="qnum">1</b> <i>/ <span id="qtotal">50</span></i> 問</span>
+      <span class="qsubinline" id="qsub">残り 50 問</span>
+      <button class="qpick" id="qpick">開始問題 ▼</button>
+    </div>
 
-    <div class="perq is-good" id="perq">
-      <div class="ttl">この問題の残り（目安2分）</div>
-      <div class="val" id="perqval">2:00</div>
-      <div class="qbar"><i id="qbarfill"></i></div>
+    <div class="clockwrap">
+      <svg id="clock" viewBox="0 0 200 200" aria-label="アナログ時計">
+        <circle cx="100" cy="100" r="98" class="cface"/>
+        <g id="ticks"></g>
+        <g id="nums"></g>
+        <line id="hHour" x1="100" y1="100" x2="100" y2="56" class="hand hour"/>
+        <line id="hMin"  x1="100" y1="100" x2="100" y2="34" class="hand min"/>
+        <line id="hSec"  x1="100" y1="100" x2="100" y2="28" class="hand sec"/>
+        <line id="hSecT" x1="100" y1="100" x2="100" y2="112" class="hand sect"/>
+        <circle cx="100" cy="100" r="5.5" class="cap"/>
+      </svg>
+      <div class="clockdigital" id="clockdigital">13:00:00</div>
     </div>
   </div>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="k">全体の残り時間</div>
-      <div class="v" id="totalval">120:00</div>
+  <!-- 現在の問題・各残り時間を横並びに集約（縦を節約して時計を大きく） -->
+  <div class="readouts">
+    <div class="ro perq is-good" id="perq">
+      <div class="k" id="perqttl">この問題の残り</div>
+      <div class="val" id="perqval">2:00</div>
     </div>
-    <div class="stat pace">
+    <div class="ro">
+      <div class="k">全体の残り時間</div>
+      <div class="val" id="totalval">120:00</div>
+    </div>
+    <div class="ro pace">
       <div class="k">ペース</div>
-      <div class="v onpace" id="paceval">±0:00</div>
+      <div class="val onpace" id="paceval">±0:00</div>
       <div class="note" id="pacenote">予定通り</div>
     </div>
   </div>
 
+  <div class="qbar"><i id="qbarfill"></i></div>
   <div class="totalbar"><i id="totalfill" style="width:0%"></i></div>
 
   <div class="controls">
@@ -209,6 +232,10 @@
     <div class="field">
       <label>1問の目安<small>1問あたりの秒数</small></label>
       <input type="number" id="setPace" min="10" max="600" value="120">
+    </div>
+    <div class="field">
+      <label>開始時刻<small>時計の始まりの時刻（本番=13:00）</small></label>
+      <input type="time" id="setStartClock" value="13:00">
     </div>
     <div class="field" style="display:block">
       <label style="margin-bottom:6px;display:block">自動で次の問題へ<small>目安経過で自動的に次問のタイマー開始</small></label>
@@ -253,8 +280,8 @@
   var cfg = load();
   function load(){
     try{ var s = JSON.parse(localStorage.getItem('takken-timer')||'{}');
-      return { Q:+s.Q||50, totalMin:+s.totalMin||120, paceSec:+s.paceSec||120, sound:(s.sound===0?0:1), auto:(s.auto===0?0:1) };
-    }catch(e){ return {Q:50,totalMin:120,paceSec:120,sound:1,auto:1}; }
+      return { Q:+s.Q||50, totalMin:+s.totalMin||120, paceSec:+s.paceSec||120, sound:(s.sound===0?0:1), auto:(s.auto===0?0:1), start:(/^\d?\d:\d\d$/.test(s.start)?s.start:'13:00') };
+    }catch(e){ return {Q:50,totalMin:120,paceSec:120,sound:1,auto:1,start:'13:00'}; }
   }
   function save(){ localStorage.setItem('takken-timer', JSON.stringify(cfg)); }
 
@@ -266,12 +293,52 @@
   var el = function(id){return document.getElementById(id);};
   var qpick=el('qpick'), qmodal=el('qmodal');
   var qnum=el('qnum'), qtotal=el('qtotal'), qsub=el('qsub');
-  var perq=el('perq'), perqval=el('perqval'), qbarfill=el('qbarfill');
+  var perq=el('perq'), perqval=el('perqval'), perqttl=el('perqttl'), qbarfill=el('qbarfill');
   var totalval=el('totalval'), totalfill=el('totalfill');
   var paceval=el('paceval'), pacenote=el('pacenote');
   var startBtn=el('startBtn'), nextBtn=el('nextBtn'), prevBtn=el('prevBtn'), resetBtn=el('resetBtn');
+  var hHour=el('hHour'), hMin=el('hMin'), hSec=el('hSec'), hSecT=el('hSecT'), clockDigital=el('clockdigital');
 
-  function applyCfg(){ Q=cfg.Q; TOTAL=cfg.totalMin*60; PACE=cfg.paceSec; }
+  var START_SEC=46800; // 13:00 default
+  function applyCfg(){
+    Q=cfg.Q; TOTAL=cfg.totalMin*60; PACE=cfg.paceSec;
+    var p=(cfg.start||'13:00').split(':'); START_SEC=((+p[0]||0)*3600)+((+p[1]||0)*60);
+  }
+
+  // 文字盤の目盛り(60本・5本ごと太線)と数字(1-12)を生成
+  (function buildFace(){
+    var NS='http://www.w3.org/2000/svg';
+    var ticks=el('ticks'), nums=el('nums');
+    for(var i=0;i<60;i++){
+      var a=i*6*Math.PI/180, maj=(i%5===0), r1=maj?80:84, r2=92;
+      var ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1',(100+Math.sin(a)*r1).toFixed(2));
+      ln.setAttribute('y1',(100-Math.cos(a)*r1).toFixed(2));
+      ln.setAttribute('x2',(100+Math.sin(a)*r2).toFixed(2));
+      ln.setAttribute('y2',(100-Math.cos(a)*r2).toFixed(2));
+      ln.setAttribute('class', maj?'tick tickmaj':'tick');
+      ticks.appendChild(ln);
+    }
+    for(var h=1;h<=12;h++){
+      var aa=h*30*Math.PI/180, r=67;
+      var t=document.createElementNS(NS,'text');
+      t.setAttribute('x',(100+Math.sin(aa)*r).toFixed(2));
+      t.setAttribute('y',(100-Math.cos(aa)*r).toFixed(2));
+      t.setAttribute('class','cnum'); t.textContent=h;
+      nums.appendChild(t);
+    }
+  })();
+
+  function pad2(n){ return (n<10?'0':'')+n; }
+  function setClock(sec){
+    var s=((sec%86400)+86400)%86400;
+    hSec.setAttribute('transform','rotate('+((s%60)*6)+' 100 100)');
+    hSecT.setAttribute('transform','rotate('+((s%60)*6)+' 100 100)');
+    hMin.setAttribute('transform','rotate('+((s%3600)*0.1)+' 100 100)');
+    hHour.setAttribute('transform','rotate('+((s%43200)/120)+' 100 100)');
+    var hh=Math.floor(s/3600)%24, mm=Math.floor(s/60)%60, ss=Math.floor(s)%60;
+    clockDigital.textContent = pad2(hh)+':'+pad2(mm)+':'+pad2(ss);
+  }
 
   function reset(){
     applyCfg();
@@ -305,10 +372,10 @@
     var qLeft = PACE - qElapsed;
     if(qLeft >= 0){
       perqval.textContent = fmt(qLeft);
-      perq.querySelector('.ttl').textContent = 'この問題の残り（目安' + fmt(PACE) + '）';
+      perqttl.textContent = 'この問題の残り';
     } else {
       perqval.textContent = '＋' + fmt(-qLeft);
-      perq.querySelector('.ttl').textContent = '目安オーバー（次の問題へ）';
+      perqttl.textContent = '目安オーバー';
     }
     var ratio = Math.max(0, Math.min(1, qElapsed/PACE));
     qbarfill.style.width = (qLeft<0?100:ratio*100) + '%';
@@ -319,6 +386,9 @@
 
     totalval.textContent = fmt(totalLeft);
     totalfill.style.width = (100*(1 - totalLeft/TOTAL)) + '%';
+
+    // アナログ時計 = 開始時刻 + 経過時間（タイマー連動）
+    setClock(START_SEC + (TOTAL - totalLeft));
 
     var elapsed = TOTAL - totalLeft;
     var schedule = (current-1)*PACE + qElapsed;
@@ -406,7 +476,7 @@
   el('closeBtn').addEventListener('click', function(){ modal.classList.remove('open'); });
   modal.addEventListener('click', function(e){ if(e.target===modal) modal.classList.remove('open'); });
   function openModal(){
-    el('setQ').value=cfg.Q; el('setMin').value=cfg.totalMin; el('setPace').value=cfg.paceSec;
+    el('setQ').value=cfg.Q; el('setMin').value=cfg.totalMin; el('setPace').value=cfg.paceSec; el('setStartClock').value=cfg.start;
     el('soundSeg').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', (+b.dataset.s)===cfg.sound); });
     el('autoSeg').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', (+b.dataset.a)===cfg.auto); });
     modal.classList.add('open');
@@ -423,7 +493,8 @@
     var pc=Math.max(10,Math.min(600, +el('setPace').value||120));
     var snd=+el('soundSeg').querySelector('button.on').dataset.s;
     var au=+el('autoSeg').querySelector('button.on').dataset.a;
-    cfg={Q:q,totalMin:mn,paceSec:pc,sound:snd,auto:au}; save();
+    var st=(/^\d?\d:\d\d$/.test(el('setStartClock').value)?el('setStartClock').value:'13:00');
+    cfg={Q:q,totalMin:mn,paceSec:pc,sound:snd,auto:au,start:st}; save();
     modal.classList.remove('open'); reset();
   });
 
