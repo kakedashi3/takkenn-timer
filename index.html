@@ -21,15 +21,22 @@
     --shadow:0 18px 40px -24px rgba(40,60,90,.35);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  html,body{height:100%;}
+  html,body{height:100%;overscroll-behavior:none;}
   body{
     font-family:"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,system-ui,sans-serif;
     background:radial-gradient(1200px 700px at 50% -8%,var(--bg2),var(--bg) 62%);
     color:var(--ink);
     height:100dvh;overflow:hidden;
     display:flex;flex-direction:column;align-items:center;
-    padding:clamp(8px,1.6vh,18px) clamp(10px,2.5vw,22px);
+    padding:max(clamp(8px,1.6vh,18px),env(safe-area-inset-top))
+            max(clamp(10px,2.5vw,22px),env(safe-area-inset-right))
+            max(clamp(8px,1.6vh,18px),env(safe-area-inset-bottom))
+            max(clamp(10px,2.5vw,22px),env(safe-area-inset-left));
+    -webkit-user-select:none;user-select:none;
+    touch-action:manipulation;          /* ダブルタップ拡大・300ms遅延を抑止 */
+    -webkit-text-size-adjust:100%;
   }
+  input{ -webkit-user-select:text;user-select:text; }
   .wrap{
     width:100%;max-width:600px;height:100%;
     display:flex;flex-direction:column;gap:clamp(7px,1.4vh,15px);
@@ -61,11 +68,17 @@
   .qline .qn b{font-size:1.5em;color:var(--accent);}
   .qline .qn i{font-style:normal;color:var(--muted);font-weight:800;}
   .qline .qsubinline{font-size:clamp(11px,1.7vh,14px);color:var(--muted);font-weight:700;}
-  .qpick{background:var(--panel2);border:1px solid var(--line);color:var(--accent);
-    font-family:inherit;font-weight:800;font-size:clamp(11px,1.7vh,13px);
-    border-radius:99px;padding:5px 14px;cursor:pointer;}
-  .qpick:active{filter:brightness(.97);}
-  .qpick.hidden{display:none;}
+  /* 開始する問題の選択バナー（スタート前のみ） */
+  .startpick{flex:0 0 auto;width:100%;display:flex;align-items:center;justify-content:center;
+    gap:clamp(8px,2vw,14px);background:#eaf4fd;border:1.5px dashed var(--accent);color:var(--ink);
+    border-radius:14px;padding:clamp(9px,1.7vh,15px);cursor:pointer;font-family:inherit;
+    font-weight:800;box-shadow:var(--shadow);flex-wrap:wrap;text-align:center;}
+  .startpick .sp-l{font-size:clamp(12px,1.8vh,15px);color:var(--muted);font-weight:700;}
+  .startpick .sp-q{font-size:clamp(15px,2.3vh,19px);}
+  .startpick .sp-q b{color:var(--accent);font-size:1.25em;}
+  .startpick .sp-tap{font-size:clamp(11px,1.6vh,13px);color:var(--accent);font-weight:800;}
+  .startpick:active{filter:brightness(.96);}
+  .startpick.hidden{display:none;}
 
   /* アナログ時計 */
   .clockwrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(2px,.8vh,8px);}
@@ -150,6 +163,28 @@
   .seg button{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--muted);
     border-radius:11px;padding:10px;font-family:inherit;font-weight:800;font-size:13px;cursor:pointer;}
   .seg button.on{border-color:var(--accent);color:var(--accent);background:#eaf4fd;}
+
+  /* スマホ縦（細幅）: 余白とフォントを微調整 */
+  @media (max-width:430px){
+    .wrap{gap:clamp(6px,1.2vh,12px);}
+    .readouts{gap:7px;}
+    .ro{padding:7px 4px;}
+    .modal{padding:12px;}
+    .sheet{gap:12px;}
+    .field input{width:104px;font-size:18px;}
+  }
+  /* 横長・低い画面（スマホ横持ち等）: 時計と余白を圧縮して1画面維持 */
+  @media (max-height:560px){
+    #clock{width:clamp(96px,30vmin,150px);}
+    .clockdigital{font-size:12px;}
+    .ro .val{font-size:clamp(17px,4.4vh,26px);}
+    button.btn{padding:9px;font-size:15px;}
+    .startpick{padding:8px;}
+    .hint{display:none;}
+  }
+  /* settings sheet がはみ出す端末向けにスクロール許可 */
+  .modal{overflow:auto;}
+  .sheet{max-height:92dvh;overflow:auto;}
 </style>
 </head>
 <body>
@@ -163,7 +198,6 @@
     <div class="qline">
       <span class="qn">第 <b id="qnum">1</b> <i>/ <span id="qtotal">50</span></i> 問</span>
       <span class="qsubinline" id="qsub">残り 50 問</span>
-      <button class="qpick" id="qpick">開始問題 ▼</button>
     </div>
 
     <div class="clockwrap">
@@ -180,6 +214,13 @@
       <div class="clockdigital" id="clockdigital">13:00:00</div>
     </div>
   </div>
+
+  <!-- スタート前だけ表示: 開始する問題の選択（横幅いっぱいで分かりやすく） -->
+  <button class="startpick" id="qpick">
+    <span class="sp-l">開始する問題</span>
+    <span class="sp-q">第 <b id="pickQ">1</b> 問 から</span>
+    <span class="sp-tap">タップで変更 ▸</span>
+  </button>
 
   <!-- 現在の問題・各残り時間を横並びに集約（縦を節約して時計を大きく） -->
   <div class="readouts">
@@ -358,7 +399,7 @@
     startBtn.textContent='スタート'; startBtn.classList.remove('running');
     render();
   }
-  function updateQpick(){ qpick.classList.toggle('hidden', started || done); }
+  function updateQpick(){ el('pickQ').textContent=current; qpick.classList.toggle('hidden', started || done); }
 
   function fmt(s){ s=Math.max(0,Math.round(s)); var m=Math.floor(s/60); var ss=s%60; return m+':' + (ss<10?'0':'') + ss; }
   function fmtSigned(s){ var sign = s>0?'＋':(s<0?'−':'±'); return sign+fmt(Math.abs(s)); }
@@ -442,6 +483,8 @@
   function prev(){ if(current>1){ current--; qElapsed=0; render(); } }
 
   var actx=null;
+  function unlockAudio(){ try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume(); }catch(e){} }
+  document.addEventListener('pointerdown', unlockAudio, {once:true}); // iOS: 最初のタップで音を解錠
   function beep(times){
     times = times||1;
     try{
