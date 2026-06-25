@@ -200,7 +200,7 @@
     <div class="brand">
       <span class="title" id="appTitle" contenteditable="true" spellcheck="false"
             title="タップ/クリックで名称を変更" role="textbox" aria-label="アプリ名">試験タイマー</span><span class="titlepen" id="titlePen" aria-hidden="true">✎</span>
-      <small>50問120分・1問2分ペース</small>
+      <small id="subtitle">50問120分・1問2分ペース</small>
     </div>
     <button class="gear" id="gear" title="設定" aria-label="設定">⚙</button>
   </header>
@@ -348,6 +348,15 @@
   function applyCfg(){
     Q=cfg.Q; TOTAL=cfg.totalMin*60; PACE=cfg.paceSec;
     var p=(cfg.start||'13:00').split(':'); START_SEC=((+p[0]||0)*3600)+((+p[1]||0)*60);
+    updateSubtitle();
+  }
+  // サブタイトルを設定値から生成（例: 50問120分・1問2分ペース / 1問2分24秒ペース）
+  function paceText(sec){
+    var m=Math.floor(sec/60), s=sec%60;
+    return s===0 ? m+'分' : (m===0 ? s+'秒' : m+'分'+s+'秒');
+  }
+  function updateSubtitle(){
+    el('subtitle').textContent = Q+'問'+cfg.totalMin+'分・1問'+paceText(PACE)+'ペース';
   }
 
   // 文字盤の目盛り(60本・5本ごと太線)と数字(1-12)を生成
